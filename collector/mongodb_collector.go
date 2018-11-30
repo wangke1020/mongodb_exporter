@@ -51,21 +51,23 @@ type MongodbCollectorOpts struct {
 	CollectIndexUsageStats   bool
 	SocketTimeout            time.Duration
 	SyncTimeout              time.Duration
-	ShardingStatFrom         string
+	EnableMongosShardingStat       bool
+	EnableConfigSvrShardingStat    bool
 }
 
 func (in *MongodbCollectorOpts) toSessionOps() *shared.MongoSessionOpts {
 	return &shared.MongoSessionOpts{
-		URI:                   in.URI,
-		TLSConnection:         in.TLSConnection,
-		TLSCertificateFile:    in.TLSCertificateFile,
-		TLSPrivateKeyFile:     in.TLSPrivateKeyFile,
-		TLSCaFile:             in.TLSCaFile,
-		TLSHostnameValidation: in.TLSHostnameValidation,
-		PoolLimit:             in.DBPoolLimit,
-		SocketTimeout:         in.SocketTimeout,
-		SyncTimeout:           in.SyncTimeout,
-		ShardingStatFrom:      in.ShardingStatFrom,
+		URI:                         in.URI,
+		TLSConnection:               in.TLSConnection,
+		TLSCertificateFile:          in.TLSCertificateFile,
+		TLSPrivateKeyFile:           in.TLSPrivateKeyFile,
+		TLSCaFile:                   in.TLSCaFile,
+		TLSHostnameValidation:       in.TLSHostnameValidation,
+		PoolLimit:                   in.DBPoolLimit,
+		SocketTimeout:               in.SocketTimeout,
+		SyncTimeout:                 in.SyncTimeout,
+		EnableMongosShardingStat:    in.EnableMongosShardingStat,
+		EnableConfigSvrShardingStat: in.EnableConfigSvrShardingStat,
 	}
 }
 
@@ -253,8 +255,8 @@ func (exporter *MongodbCollector) collectMongos(session *mgo.Session, ch chan<- 
 		serverStatus.Export(ch)
 	}
 
-	if exporter.Opts.ShardingStatFrom == nodeMongos {
-		log.Debug("Collecting Sharding Status")
+	if exporter.Opts.EnableMongosShardingStat {
+		log.Info("Collecting Sharding Status")
 		shardingStatus := mongos.GetShardingStatus(session)
 		if shardingStatus != nil {
 			shardingStatus.Export(ch)
@@ -281,8 +283,8 @@ func (exporter *MongodbCollector) collectMongos(session *mgo.Session, ch chan<- 
 func (exporter *MongodbCollector) collectConfigSvr(session *mgo.Session, ch chan<- prometheus.Metric) {
 	exporter.collectMongodReplSet(session, ch)
 
-	if exporter.Opts.ShardingStatFrom == nodeConfigSvr {
-		log.Debug("Collecting Sharding Status")
+	if exporter.Opts.EnableConfigSvrShardingStat {
+		log.Info("Collecting Sharding Status")
 		shardingStatus := mongos.GetShardingStatus(session)
 		if shardingStatus != nil {
 			shardingStatus.Export(ch)

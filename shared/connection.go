@@ -45,16 +45,17 @@ func RedactMongoUri(uri string) string {
 }
 
 type MongoSessionOpts struct {
-	URI                   string
-	TLSConnection         bool
-	TLSCertificateFile    string
-	TLSPrivateKeyFile     string
-	TLSCaFile             string
-	TLSHostnameValidation bool
-	PoolLimit             int
-	SocketTimeout         time.Duration
-	SyncTimeout           time.Duration
-	ShardingStatFrom      string
+	URI                         string
+	TLSConnection               bool
+	TLSCertificateFile          string
+	TLSPrivateKeyFile           string
+	TLSCaFile                   string
+	TLSHostnameValidation       bool
+	PoolLimit                   int
+	SocketTimeout               time.Duration
+	SyncTimeout                 time.Duration
+	EnableMongosShardingStat    bool
+	EnableConfigSvrShardingStat bool
 }
 
 // MongoSession connects to MongoDB and returns ready to use MongoDB session.
@@ -185,7 +186,7 @@ func MongoSessionNodeType(session *mgo.Session) (string, error) {
 	}
 
 	if masterDoc.SetName != nil || masterDoc.Hosts != nil {
-		if masterDoc.IsMaster && masterDoc.ConfigServer != 0 {
+		if !masterDoc.IsMaster && masterDoc.ConfigServer != 0 {
 			return "configsvr", nil
 		}
 		return "replset", nil

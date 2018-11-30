@@ -26,8 +26,8 @@ import (
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
 
-	"github.com/percona/mongodb_exporter/collector"
-	"github.com/percona/mongodb_exporter/shared"
+	"github.com/wangke1020/mongodb_exporter/collector"
+	"github.com/wangke1020/mongodb_exporter/shared"
 )
 
 const (

@@ -23,9 +23,9 @@ import (
 	"github.com/prometheus/common/log"
 	"gopkg.in/mgo.v2"
 
-	"github.com/percona/mongodb_exporter/collector/mongod"
-	"github.com/percona/mongodb_exporter/collector/mongos"
-	"github.com/percona/mongodb_exporter/shared"
+	"github.com/wangke1020/mongodb_exporter/collector/mongod"
+	"github.com/wangke1020/mongodb_exporter/collector/mongos"
+	"github.com/wangke1020/mongodb_exporter/shared"
 )
 
 const (

@@ -216,44 +216,45 @@ func (replStatus *ReplSetStatus) Export(ch chan<- prometheus.Metric) {
 				"name": member.Name,
 			}
 			myName.With(labels).Set(1)
-		}
-		ls := prometheus.Labels{
-			"set":   replStatus.Set,
-			"name":  member.Name,
-			"state": member.StateStr,
-		}
 
-		memberState.With(ls).Set(float64(member.State))
+			ls := prometheus.Labels{
+				"set":   replStatus.Set,
+				"name":  member.Name,
+				"state": member.StateStr,
+			}
 
-		// ReplSetStatus.Member.Health is not available on the node you're connected to
-		if member.Health != nil {
-			memberHealth.With(ls).Set(float64(*member.Health))
-		}
+			memberState.With(ls).Set(float64(member.State))
 
-		memberUptime.With(ls).Set(member.Uptime)
+			// ReplSetStatus.Member.Health is not available on the node you're connected to
+			if member.Health != nil {
+				memberHealth.With(ls).Set(float64(*member.Health))
+			}
 
-		memberOptimeDate.With(ls).Set(float64(member.OptimeDate.Unix()))
+			memberUptime.With(ls).Set(member.Uptime)
 
-		if member.StateStr == "SECONDARY" {
-			memberRepLag.With(ls).Set(primaryOptimeDate - float64(member.OptimeDate.Unix()))
-			memberOperationalLag.With(ls).Set(float64(replStatus.Date.Unix()) - primaryLastHeartbeatRecv)
-		}
+			memberOptimeDate.With(ls).Set(float64(member.OptimeDate.Unix()))
 
-		// ReplSetGetStatus.Member.ElectionTime is only available on the PRIMARY
-		if member.ElectionDate != nil {
-			memberElectionDate.With(ls).Set(float64((*member.ElectionDate).Unix()))
-		}
-		if member.LastHeartbeat != nil {
-			memberLastHeartbeat.With(ls).Set(float64((*member.LastHeartbeat).Unix()))
-		}
-		if member.LastHeartbeatRecv != nil {
-			memberLastHeartbeatRecv.With(ls).Set(float64((*member.LastHeartbeatRecv).Unix()))
-		}
-		if member.PingMs != nil {
-			memberPingMs.With(ls).Set(*member.PingMs)
-		}
-		if member.ConfigVersion != nil {
-			memberConfigVersion.With(ls).Set(float64(*member.ConfigVersion))
+			if member.StateStr == "SECONDARY" {
+				memberRepLag.With(ls).Set(primaryOptimeDate - float64(member.OptimeDate.Unix()))
+				memberOperationalLag.With(ls).Set(float64(replStatus.Date.Unix()) - primaryLastHeartbeatRecv)
+			}
+
+			// ReplSetGetStatus.Member.ElectionTime is only available on the PRIMARY
+			if member.ElectionDate != nil {
+				memberElectionDate.With(ls).Set(float64((*member.ElectionDate).Unix()))
+			}
+			if member.LastHeartbeat != nil {
+				memberLastHeartbeat.With(ls).Set(float64((*member.LastHeartbeat).Unix()))
+			}
+			if member.LastHeartbeatRecv != nil {
+				memberLastHeartbeatRecv.With(ls).Set(float64((*member.LastHeartbeatRecv).Unix()))
+			}
+			if member.PingMs != nil {
+				memberPingMs.With(ls).Set(*member.PingMs)
+			}
+			if member.ConfigVersion != nil {
+				memberConfigVersion.With(ls).Set(float64(*member.ConfigVersion))
+			}
 		}
 	}
 	// collect metrics

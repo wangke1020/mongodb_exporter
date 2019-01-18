@@ -69,6 +69,11 @@ var (
 		Name:      shardingStatCatalogCachePrefix + "num_active_full_refreshes",
 		Help:      "The number of full catalog cache refreshes that are currently waiting to complete.",
 	}, []string{})
+	countFullRefreshesStarted = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: Namespace,
+		Name:      shardingStatCatalogCachePrefix + "count_full_refreshes_started",
+		Help:      "The cumulative number of full refreshes that have started",
+	}, []string{})
 	countFailedRefreshes = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: Namespace,
 		Name:      shardingStatCatalogCachePrefix + "count_failed_refreshes",
@@ -116,6 +121,7 @@ func (c *catalogCache) update() {
 	numActiveIncrementalRefreshes.WithLabelValues().Set(c.NumActiveIncrementalRefreshes)
 	countIncrementalRefreshesStarted.WithLabelValues().Set(c.CountIncrementalRefreshesStarted)
 	numActiveFullRefreshes.WithLabelValues().Set(c.NumActiveFullRefreshes)
+	countFullRefreshesStarted.WithLabelValues().Set(c.CountFullRefreshesStarted)
 	countFailedRefreshes.WithLabelValues().Set(c.CountFailedRefreshes)
 }
 
@@ -140,6 +146,7 @@ func (c *catalogCache) Export(ch chan<- prometheus.Metric) {
 	numActiveIncrementalRefreshes.Collect(ch)
 	countIncrementalRefreshesStarted.Collect(ch)
 	numActiveFullRefreshes.Collect(ch)
+	countFullRefreshesStarted.Collect(ch)
 	countFailedRefreshes.Collect(ch)
 }
 
